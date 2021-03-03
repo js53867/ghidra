@@ -237,6 +237,28 @@ public class DecompileOptions {
 		"If set, the entry point plate comment is displayed as " + "a function header comment.";
 	private final static boolean COMMENTHEAD_OPTIONDEFAULT = true;
 	private boolean commentHeadInclude;
+	
+	private final static String INDENTATIONSTYLE_OPTIONSTRING = "Display.Indentation style";
+	private final static String INDENTATIONSTYLE_OPTIONDESCRIPTION = "The indentation style to be used";
+	
+	public enum IndentationStyleEnum {
+		
+		KR("K&R style"), Allman("Allman style");
+		
+		private String label;
+		
+		private IndentationStyleEnum(String label) {
+			this.label = label;
+		}
+		
+		@Override
+		public String toString() {
+			return label;
+		}
+	}	
+
+	private final static IndentationStyleEnum INDENTATIONSTYLE_OPTIONDEFAULT = IndentationStyleEnum.KR;
+	private IndentationStyleEnum indentationStyle;
 
 	public enum NamespaceStrategy {
 		Minimal("minimal", "Minimally"),
@@ -390,6 +412,7 @@ public class DecompileOptions {
 		commentWARNInclude = COMMENTWARN_OPTIONDEFAULT;
 		commentHeadInclude = COMMENTHEAD_OPTIONDEFAULT;
 		namespaceStrategy = NAMESPACE_OPTIONDEFAULT;
+        indentationStyle = INDENTATIONSTYLE_OPTIONDEFAULT;
 		integerFormat = INTEGERFORMAT_OPTIONDEFAULT;
 		keywordColor = HIGHLIGHT_KEYWORD_DEF;
 		functionColor = HIGHLIGHT_FUNCTION_DEF;
@@ -452,6 +475,7 @@ public class DecompileOptions {
 		commentWARNInclude = opt.getBoolean(COMMENTWARN_OPTIONSTRING, COMMENTWARN_OPTIONDEFAULT);
 		commentHeadInclude = opt.getBoolean(COMMENTHEAD_OPTIONSTRING, COMMENTHEAD_OPTIONDEFAULT);
 		namespaceStrategy = opt.getEnum(NAMESPACE_OPTIONSTRING, NAMESPACE_OPTIONDEFAULT);
+        indentationStyle = opt.getEnum(INDENTATIONSTYLE_OPTIONSTRING, INDENTATIONSTYLE_OPTIONDEFAULT);
 		integerFormat = opt.getEnum(INTEGERFORMAT_OPTIONSTRING, INTEGERFORMAT_OPTIONDEFAULT);
 		keywordColor = opt.getColor(HIGHLIGHT_KEYWORD_MSG, HIGHLIGHT_KEYWORD_DEF);
 		typeColor = opt.getColor(HIGHLIGHT_TYPE_MSG, HIGHLIGHT_TYPE_DEF);
@@ -625,6 +649,10 @@ public class DecompileOptions {
 			NAMESPACE_OPTIONDEFAULT,
 			new HelpLocation(HelpTopics.DECOMPILER, "DisplayNamespaces"),
 			NAMESPACE_OPTIONDESCRIPTION);
+        opt.registerOption(INDENTATIONSTYLE_OPTIONSTRING,
+            INDENTATIONSTYLE_OPTIONDEFAULT,
+            new HelpLocation(HelpTopics.DECOMPILER, "IndendationStyle"),
+			INDENTATIONSTYLE_OPTIONDESCRIPTION);
 		opt.registerOption(INTEGERFORMAT_OPTIONSTRING,
 			INTEGERFORMAT_OPTIONDEFAULT,
 			new HelpLocation(HelpTopics.DECOMPILER, "DisplayIntegerFormat"),
@@ -772,6 +800,9 @@ public class DecompileOptions {
 		appendOption(buf, "commentinstruction", "warning", commentWARNInclude ? "on" : "off", "");
 		appendOption(buf, "commentheader", "header", commentHeadInclude ? "on" : "off", "");
 		appendOption(buf, "commentheader", "warningheader", commentWARNInclude ? "on" : "off", "");
+		
+        String indentationstyle = IndentationStyleEnum.KR.equals(indentationStyle) ? "kr" : "allman";
+		appendOption(buf, "indentationstyle", indentationstyle, "", "");
 
 		appendOption(buf, "namespacestrategy", namespaceStrategy.getOptionString(), "", "");
 
@@ -965,7 +996,14 @@ public class DecompileOptions {
 	public void setCommentStyle(CommentStyleEnum commentStyle) {
 		this.commentStyle = commentStyle;
 	}
-
+	
+	public IndentationStyleEnum getIndentationStyle() {
+		return indentationStyle;
+	}
+	
+	public void setIndentationStyle(IndentationStyleEnum indentationStyle) {
+		this.indentationStyle = indentationStyle;
+	}
 	public int getCacheSize() {
 		return cachedResultsSize;
 	}
